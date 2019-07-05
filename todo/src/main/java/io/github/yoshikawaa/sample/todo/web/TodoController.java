@@ -21,7 +21,7 @@ import io.github.yoshikawaa.sample.todo.web.TodoForm.TodoDelete;
 import io.github.yoshikawaa.sample.todo.web.TodoForm.TodoFinish;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/todo")
 public class TodoController {
 
     @Autowired

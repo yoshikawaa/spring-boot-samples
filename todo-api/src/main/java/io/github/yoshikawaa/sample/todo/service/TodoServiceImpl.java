@@ -24,10 +24,17 @@ public class TodoServiceImpl implements TodoService {
 	TodoRepository todoRepository;
 
 	@Override
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public Collection<Todo> findAll() {
 		return todoRepository.findAll();
 	}
+
+    @Override
+    @Transactional(readOnly = true)
+    public Todo findById(String todoId) {
+        return todoRepository.findById(todoId).orElseThrow(
+                () -> new ResourceNotFoundException("The requested Todo is not found. (id=" + todoId + ")"));
+    }
 
 	@Override
 	public Todo create(Todo todo) {
@@ -61,10 +68,5 @@ public class TodoServiceImpl implements TodoService {
 		Todo todo = findById(todoId);
 		todoRepository.deleteById(todo);
 	}
-
-    private Todo findById(String todoId) {
-        return todoRepository.findById(todoId).orElseThrow(
-                () -> new ResourceNotFoundException("The requested Todo is not found. (id=" + todoId + ")"));
-    }
 
 }

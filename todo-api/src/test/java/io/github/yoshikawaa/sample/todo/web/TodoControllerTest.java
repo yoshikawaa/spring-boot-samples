@@ -27,11 +27,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.github.jmnarloch.spring.boot.modelmapper.ModelMapperAutoConfiguration;
 
+import io.github.yoshikawaa.sample.todo.api.TodoRestController;
 import io.github.yoshikawaa.sample.todo.domain.Todo;
-import io.github.yoshikawaa.sample.todo.exception.ResourceNotFoundException;
 import io.github.yoshikawaa.sample.todo.service.TodoService;
 
-@WebMvcTest(TodoController.class)
+@WebMvcTest(TodoRestController.class)
 @ImportAutoConfiguration(ModelMapperAutoConfiguration.class)
 class TodoControllerTest {
 
@@ -52,7 +52,7 @@ class TodoControllerTest {
 
         // execute & assert
         // @formatter:off
-        mvc.perform(get("/todo/list"))
+        mvc.perform(get("/list"))
             .andExpect(status().isOk())
             .andExpect(view().name("list"))
             .andExpect(model().attribute("todos", todos));
@@ -66,7 +66,7 @@ class TodoControllerTest {
 
         // execute & assert
         // @formatter:off
-        mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
+        mvc.perform(post("/create").param("todoTitle", todoTitle))
             .andExpect(status().isFound())
             .andExpect(redirectedUrl("/list"))
             .andExpect(model().hasNoErrors())
@@ -85,7 +85,7 @@ class TodoControllerTest {
     
             // execute & assert
             // @formatter:off
-            mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
+            mvc.perform(post("/create").param("todoTitle", todoTitle))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoTitle", "NotEmpty"));
@@ -101,7 +101,7 @@ class TodoControllerTest {
     
             // execute & assert
             // @formatter:off
-            mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
+            mvc.perform(post("/create").param("todoTitle", todoTitle))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
                 .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoTitle", "Size"));
@@ -119,7 +119,7 @@ class TodoControllerTest {
 
         // execute & assert
         // @formatter:off
-        mvc.perform(post("/todo/finish").param("todoId", todoId))
+        mvc.perform(post("/finish").param("todoId", todoId))
             .andExpect(status().isFound())
             .andExpect(redirectedUrl("/list"))
             .andExpect(model().hasNoErrors())
@@ -137,7 +137,7 @@ class TodoControllerTest {
 
         // execute & assert
         // @formatter:off
-        mvc.perform(post("/todo/finish").param("todoId", todoId))
+        mvc.perform(post("/finish").param("todoId", todoId))
             .andExpect(status().isOk())
             .andExpect(view().name("list"))
             .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoId", "NotEmpty"));
@@ -148,31 +148,13 @@ class TodoControllerTest {
     }
 
     @Test
-    void testFinishResourceNotFound() throws Exception {
-        // setup
-        String todoId = "1";
-        // setup mocks
-        given(todoService.finish(anyString())).willThrow(new ResourceNotFoundException("sample exception"));
-
-        // execute & assert
-        // @formatter:off
-        mvc.perform(post("/todo/finish").param("todoId", todoId))
-            .andExpect(status().isNotFound())
-            .andExpect(status().reason("sample exception"));
-        // @formatter:on
-
-        // assert
-        verify(todoService, times(1)).finish(anyString());
-    }
-
-    @Test
     void testDelete() throws Exception {
         // setup
         String todoId = "1";
 
         // execute & assert
         // @formatter:off
-        mvc.perform(post("/todo/delete").param("todoId", todoId))
+        mvc.perform(post("/delete").param("todoId", todoId))
             .andExpect(status().isFound())
             .andExpect(redirectedUrl("/list"))
             .andExpect(model().hasNoErrors())
@@ -190,7 +172,7 @@ class TodoControllerTest {
 
         // execute & assert
         // @formatter:off
-        mvc.perform(post("/todo/delete").param("todoId", todoId))
+        mvc.perform(post("/delete").param("todoId", todoId))
             .andExpect(status().isOk())
             .andExpect(view().name("list"))
             .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoId", "NotEmpty"));
