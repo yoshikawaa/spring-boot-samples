@@ -1,0 +1,12 @@
+spring:
+  http:
+    log-request-details: true
+  mvc:
+    log-resolved-exception: true
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    lazy-loading-enabled: true
+    default-fetch-size: 100
+app:
+  max-un-finished-count: 5
