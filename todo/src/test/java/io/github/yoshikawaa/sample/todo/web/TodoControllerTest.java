@@ -1,5 +1,6 @@
 package io.github.yoshikawaa.sample.todo.web;
 
+import static org.hamcrest.collection.IsIn.in;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -20,19 +21,19 @@ import java.util.Collection;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.github.jmnarloch.spring.boot.modelmapper.ModelMapperAutoConfiguration;
 
 import io.github.yoshikawaa.sample.todo.domain.Todo;
 import io.github.yoshikawaa.sample.todo.exception.ResourceNotFoundException;
 import io.github.yoshikawaa.sample.todo.service.TodoService;
 
-@WebMvcTest(TodoController.class)
-@ImportAutoConfiguration(ModelMapperAutoConfiguration.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+//@WebMvcTest(TodoController.class)
+//@ImportAutoConfiguration(ModelMapperAutoConfiguration.class)
 class TodoControllerTest {
 
     @Autowired
@@ -82,13 +83,13 @@ class TodoControllerTest {
         {
             // setup
             String todoTitle = "";
-    
+
             // execute & assert
             // @formatter:off
             mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
                 .andExpect(status().isOk())
                 .andExpect(view().name("list"))
-                .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoTitle", "NotEmpty"));
+                .andExpect(model().attributeHasFieldErrorCode("todoForm", "todoTitle", in(Lists.list("NotEmpty", "Size"))));
             // @formatter:on
 
             // assert
@@ -98,7 +99,7 @@ class TodoControllerTest {
         {
             // setup
             String todoTitle = "123456789a123456789b123456789c1";
-    
+
             // execute & assert
             // @formatter:off
             mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
@@ -157,8 +158,7 @@ class TodoControllerTest {
         // execute & assert
         // @formatter:off
         mvc.perform(post("/todo/finish").param("todoId", todoId))
-            .andExpect(status().isNotFound())
-            .andExpect(status().reason("sample exception"));
+            .andExpect(status().isNotFound());
         // @formatter:on
 
         // assert

@@ -1,23 +1,23 @@
 package io.github.yoshikawaa.sample.todo.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class ResourceNotFoundException extends ResponseStatusException {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-    private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
 
-    public ResourceNotFoundException(String reason, Throwable cause) {
-        super(HTTP_STATUS, reason, cause);
+    public ResourceNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ResourceNotFoundException(String reason) {
-        super(HTTP_STATUS, reason);
+    public ResourceNotFoundException(String message) {
+        super(message);
     }
 
-    public ResourceNotFoundException() {
-        super(HTTP_STATUS);
+    public ResourceNotFoundException(Throwable cause) {
+        super(cause);
     }
 
 }

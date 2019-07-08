@@ -1,0 +1,34 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Todo List</title>
+<link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <h1>Todo List</h1>
+    <span th:if="${successMessage} != null" th:text="${successMessage}" class="alert alert-success"></span>
+    <span th:if="${errorMessage} != null" th:text="${errorMessage}" class="alert alert-error"></span>
+    <div id="todoForm">
+        <form method="post" th:action="@{/todo/create}" th:object="${todoForm}">
+            <input th:field="*{todoTitle}">
+            <span th:errors="*{todoTitle}" class="text-error"></span>
+            <button>Create</button>
+        </form>
+    </div>
+    <hr>
+    <div id="todoList">
+        <ul th:remove="all-but-first">
+            <li th:each="todo : ${todos}" th:object="${todo}">
+                <span th:class="*{finished} ? 'strike'" th:text="*{todoTitle}"></span>
+                <form th:if="*{not finished}" method="post" th:action="@{/todo/finish}" class="inline">
+                    <input type="hidden" name="todoId" th:value="*{todoId}">
+                    <button>Finish</button>
+                </form>
+                <form method="post" th:action="@{/todo/delete}" class="inline">
+                    <input type="hidden" name="todoId" th:value="*{todoId}">
+                    <button>Delete</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import io.github.yoshikawaa.sample.todo.domain.Todo;
+import io.github.yoshikawaa.sample.todo.exception.ResourceNotFoundException;
 import io.github.yoshikawaa.sample.todo.service.TodoService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -140,6 +141,23 @@ class TodoRestControllerTest {
                 .extracting(TodoResource::getTodoId, TodoResource::getTodoTitle, TodoResource::isFinished,
                         TodoResource::getCreatedAt)
                 .containsExactly("1", "sample todo", true, LocalDate.of(2019, 1, 1).atStartOfDay());
+    }
+
+    @Test
+    void testPutTodoResourceNotFound() throws Exception {
+        // setup
+        String todoId = "1";
+        // setup mocks
+        given(todoService.finish(anyString())).willThrow(new ResourceNotFoundException("sample exception"));
+
+        // execute
+        ResponseEntity<String> result = restTemplate.exchange("/todos/" + todoId, HttpMethod.PUT, null,
+                String.class);
+
+        // assert
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(result.getBody()).contains("sample exception");
     }
 
     @Test
