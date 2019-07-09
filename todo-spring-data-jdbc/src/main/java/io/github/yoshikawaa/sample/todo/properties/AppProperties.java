@@ -9,5 +9,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AppProperties {
-	private long maxUnFinishedCount;
+    private long maxUnFinishedCount;
 }

@@ -39,7 +39,7 @@ public class TodoRestController {
                 .collect(toList());
         // @formatter:on
     }
-    
+
     @GetMapping("/{todoId}")
     public TodoResource getTodo(@PathVariable("todoId") String todoId) {
         return modelMapper.map(todoService.findById(todoId), TodoResource.class);

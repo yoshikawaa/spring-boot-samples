@@ -52,7 +52,7 @@ public class TodoController {
         }
 
         attributes.addFlashAttribute("successMessage", "Created successfully!");
-        return "redirect:/list";
+        return "redirect:/todo/list";
     }
 
     @PostMapping("finish")
@@ -71,7 +71,7 @@ public class TodoController {
         }
 
         attributes.addFlashAttribute("successMessage", "Finished successfully!");
-        return "redirect:/list";
+        return "redirect:/todo/list";
     }
 
     @PostMapping("delete")
@@ -90,7 +90,7 @@ public class TodoController {
         }
 
         attributes.addFlashAttribute("successMessage", "Deleted successfully!");
-        return "redirect:/list";
+        return "redirect:/todo/list";
     }
 
 }

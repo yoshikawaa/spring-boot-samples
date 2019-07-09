@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,54 +19,57 @@ import io.github.yoshikawaa.sample.todo.repository.TodoRepository;
 @Transactional
 public class TodoServiceImpl implements TodoService {
 
-	@Autowired
-	AppProperties app;
+    @Autowired
+    AppProperties app;
 
-	@Autowired
-	TodoRepository todoRepository;
+    @Autowired
+    MessageSource messageSource;
 
-	@Override
+    @Autowired
+    TodoRepository todoRepository;
+
+    @Override
     @Transactional(readOnly = true)
-	public Collection<Todo> findAll() {
-		return todoRepository.findAll();
-	}
+    public Collection<Todo> findAll() {
+        return todoRepository.findAll();
+    }
 
-	@Override
-	public Todo create(Todo todo) {
-		long unfinishedCount = todoRepository.countByFinished(false);
-		if (unfinishedCount >= app.getMaxUnFinishedCount()) {
-			throw new BusinessException(
-					"The count of un-finished Todo must not be over " + app.getMaxUnFinishedCount());
-		}
-		
-		todo.setFinished(false);
-		todo.setCreatedAt(LocalDateTime.now());
-		todoRepository.create(todo);
-		return todo;
-	}
+    @Override
+    public Todo create(Todo todo) {
+        long unfinishedCount = todoRepository.countByFinished(false);
+        if (unfinishedCount >= app.getMaxUnFinishedCount()) {
+            throw new BusinessException(messageSource.getMessage("messages.409.over-un-finished",
+                    new Object[] { app.getMaxUnFinishedCount() }, LocaleContextHolder.getLocale()));
+        }
 
-	@Override
-	public Todo finish(String todoId) {
-		Todo todo = findById(todoId);
-		if (todo.isFinished()) {
-			throw new BusinessException(
-					"The requested Todo is already finished. (id=" + todoId + ")");
-		}
-		
-		todo.setFinished(true);
-		todoRepository.updateById(todo);
-		return todo;
-	}
+        todo.setFinished(false);
+        todo.setCreatedAt(LocalDateTime.now());
+        todoRepository.create(todo);
+        return todo;
+    }
 
-	@Override
-	public void delete(String todoId) {
-		Todo todo = findById(todoId);
-		todoRepository.deleteById(todo);
-	}
+    @Override
+    public Todo finish(String todoId) {
+        Todo todo = findById(todoId);
+        if (todo.isFinished()) {
+            throw new BusinessException(messageSource.getMessage("messages.409.already-finished",
+                    new Object[] { todoId }, LocaleContextHolder.getLocale()));
+        }
+
+        todo.setFinished(true);
+        todoRepository.updateById(todo);
+        return todo;
+    }
+
+    @Override
+    public void delete(String todoId) {
+        Todo todo = findById(todoId);
+        todoRepository.deleteById(todo);
+    }
 
     private Todo findById(String todoId) {
-        return todoRepository.findById(todoId).orElseThrow(
-                () -> new ResourceNotFoundException("The requested Todo is not found. (id=" + todoId + ")"));
+        return todoRepository.findById(todoId).orElseThrow(() -> new ResourceNotFoundException(messageSource
+                .getMessage("messages.404.todo-not-found", new Object[] { todoId }, LocaleContextHolder.getLocale())));
     }
 
 }

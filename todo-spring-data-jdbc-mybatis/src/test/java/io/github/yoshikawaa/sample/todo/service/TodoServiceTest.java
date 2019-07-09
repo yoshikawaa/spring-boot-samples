@@ -77,11 +77,13 @@ class TodoServiceTest {
     @Test
     void testCreateMaxUnFinishedCount() {
         // setup
+        Todo todo = new Todo();
+        todo.setTodoTitle("sample todo");
         // setup mocks
         given(todoRepository.count()).willReturn(6L);
 
         // execute & assert
-        assertThatThrownBy(() -> todoService.create(any(Todo.class))).isInstanceOf(BusinessException.class)
+        assertThatThrownBy(() -> todoService.create(todo)).isInstanceOf(BusinessException.class)
                 .hasMessageContaining(new Long(app.getMaxUnFinishedCount()).toString());
     }
 

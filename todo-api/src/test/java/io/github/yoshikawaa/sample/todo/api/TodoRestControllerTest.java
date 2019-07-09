@@ -39,9 +39,12 @@ class TodoRestControllerTest {
     @Test
     void testGetTodos() throws Exception {
         // setup
-        Collection<Todo> todos = Lists.list(new Todo("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
+        // @formatter:off
+        Collection<Todo> todos = Lists.list(
+                new Todo("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
                 new Todo("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
                 new Todo("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay()));
+        // @formatter:on
         // setup mocks
         given(todoService.findAll()).willReturn(todos);
 
@@ -56,9 +59,12 @@ class TodoRestControllerTest {
         assertThat(result.getBody())
                 .extracting(TodoResource::getTodoId, TodoResource::getTodoTitle, TodoResource::isFinished,
                         TodoResource::getCreatedAt)
-                .hasSize(3).containsExactly(tuple("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
+                // @formatter:off
+                .hasSize(3).containsExactly(
+                        tuple("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
                         tuple("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
                         tuple("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay()));
+                // @formatter:on
     }
 
     @Test
@@ -151,8 +157,7 @@ class TodoRestControllerTest {
         given(todoService.finish(anyString())).willThrow(new ResourceNotFoundException("sample exception"));
 
         // execute
-        ResponseEntity<String> result = restTemplate.exchange("/todos/" + todoId, HttpMethod.PUT, null,
-                String.class);
+        ResponseEntity<String> result = restTemplate.exchange("/todos/" + todoId, HttpMethod.PUT, null, String.class);
 
         // assert
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

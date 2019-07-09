@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TodoForm {
-	@NotEmpty(groups = { TodoFinish.class, TodoDelete.class })
-	private String todoId;
-	@NotEmpty(groups = TodoCreate.class)
-	@Size(min = 1, max = 30, groups = TodoCreate.class)
-	private String todoTitle;
+    @NotEmpty(groups = { TodoFinish.class, TodoDelete.class })
+    private String todoId;
+    @NotEmpty(groups = TodoCreate.class)
+    @Size(min = 1, max = 30, groups = TodoCreate.class)
+    private String todoTitle;
 
-	public static interface TodoCreate {
-	};
+    public static interface TodoCreate {
+    };
 
-	public static interface TodoFinish {
-	};
+    public static interface TodoFinish {
+    };
 
-	public static interface TodoDelete {
-	}
+    public static interface TodoDelete {
+    }
 }

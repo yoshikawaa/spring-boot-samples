@@ -6,5 +6,8 @@ mybatis:
     map-underscore-to-camel-case: true
     lazy-loading-enabled: true
     default-fetch-size: 100
+logging:
+  level:
+    io.github.yoshikawaa.sample.todo.repository: trace
 app:
   max-un-finished-count: 5

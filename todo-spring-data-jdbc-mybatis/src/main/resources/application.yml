@@ -2,12 +2,13 @@ spring:
   http:
     log-request-details: true
 mybatis:
-  mapper-locations:
-  - classpath:/io/github/yoshikawaa/sample/todo/domain/*Mapper.xml
-  type-aliases-package: io.github.yoshikawaa.sample.todo.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    lazy-loading-enabled: true
+    default-fetch-size: 100
 logging:
   level:
-    org.springframework.jdbc: trace
-    io.github.yoshikawaa.sample.todo.repository: trace
+    org.springframework.jdbc.core.JdbcTemplate: trace
+    io.github.yoshikawaa.sample.todo.domain: trace
 app:
   max-un-finished-count: 5

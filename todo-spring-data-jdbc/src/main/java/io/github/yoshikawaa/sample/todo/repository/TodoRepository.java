@@ -9,5 +9,5 @@ import io.github.yoshikawaa.sample.todo.domain.Todo;
 public interface TodoRepository extends CrudRepository<Todo, String> {
 
     @Query("SELECT COUNT(*) FROM todo WHERE finished = :finished")
-   long countByFinished(@Param("finished") boolean finished);
+    long countByFinished(@Param("finished") boolean finished);
 }

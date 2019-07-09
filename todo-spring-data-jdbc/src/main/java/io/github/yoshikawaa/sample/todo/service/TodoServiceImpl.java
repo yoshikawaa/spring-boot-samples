@@ -16,50 +16,49 @@ import io.github.yoshikawaa.sample.todo.repository.TodoRepository;
 @Transactional
 public class TodoServiceImpl implements TodoService {
 
-	@Autowired
-	AppProperties app;
+    @Autowired
+    AppProperties app;
 
-	@Autowired
-	TodoRepository todoRepository;
+    @Autowired
+    TodoRepository todoRepository;
 
-	@Override
+    @Override
     @Transactional(readOnly = true)
-	public Iterable<Todo> findAll() {
-		return todoRepository.findAll();
-	}
+    public Iterable<Todo> findAll() {
+        return todoRepository.findAll();
+    }
 
-	@Override
-	public Todo create(Todo todo) {
-		long unfinishedCount = todoRepository.countByFinished(false);
-		if (unfinishedCount >= app.getMaxUnFinishedCount()) {
-			throw new BusinessException(
-					"The count of un-finished Todo must not be over " + app.getMaxUnFinishedCount());
-		}
-		
-		todo.setFinished(false);
-		todo.setCreatedAt(LocalDateTime.now());
-		todoRepository.save(todo);
-		return todo;
-	}
+    @Override
+    public Todo create(Todo todo) {
+        long unfinishedCount = todoRepository.countByFinished(false);
+        if (unfinishedCount >= app.getMaxUnFinishedCount()) {
+            throw new BusinessException(
+                    "The count of un-finished Todo must not be over " + app.getMaxUnFinishedCount());
+        }
 
-	@Override
-	public Todo finish(String todoId) {
-		Todo todo = findById(todoId);
-		if (todo.isFinished()) {
-			throw new BusinessException(
-					"The requested Todo is already finished. (id=" + todoId + ")");
-		}
-		
-		todo.setFinished(true);
-		todoRepository.save(todo);
-		return todo;
-	}
+        todo.setFinished(false);
+        todo.setCreatedAt(LocalDateTime.now());
+        todoRepository.save(todo);
+        return todo;
+    }
 
-	@Override
-	public void delete(String todoId) {
-		Todo todo = findById(todoId);
-		todoRepository.delete(todo);
-	}
+    @Override
+    public Todo finish(String todoId) {
+        Todo todo = findById(todoId);
+        if (todo.isFinished()) {
+            throw new BusinessException("The requested Todo is already finished. (id=" + todoId + ")");
+        }
+
+        todo.setFinished(true);
+        todoRepository.save(todo);
+        return todo;
+    }
+
+    @Override
+    public void delete(String todoId) {
+        Todo todo = findById(todoId);
+        todoRepository.delete(todo);
+    }
 
     private Todo findById(String todoId) {
         return todoRepository.findById(todoId).orElseThrow(

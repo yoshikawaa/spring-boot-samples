@@ -1,5 +1,8 @@
 spring:
   http:
     log-request-details: true
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: trace
 app:
   max-un-finished-count: 5

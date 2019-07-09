@@ -21,19 +21,18 @@ import java.util.Collection;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import io.github.yoshikawaa.sample.todo.ModelMapperConfig;
 import io.github.yoshikawaa.sample.todo.domain.Todo;
 import io.github.yoshikawaa.sample.todo.exception.ResourceNotFoundException;
 import io.github.yoshikawaa.sample.todo.service.TodoService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-//@WebMvcTest(TodoController.class)
-//@ImportAutoConfiguration(ModelMapperAutoConfiguration.class)
+@WebMvcTest(TodoController.class)
+@Import(ModelMapperConfig.class)
 class TodoControllerTest {
 
     @Autowired
@@ -69,7 +68,7 @@ class TodoControllerTest {
         // @formatter:off
         mvc.perform(post("/todo/create").param("todoTitle", todoTitle))
             .andExpect(status().isFound())
-            .andExpect(redirectedUrl("/list"))
+            .andExpect(redirectedUrl("/todo/list"))
             .andExpect(model().hasNoErrors())
             .andExpect(flash().attribute("successMessage", "Created successfully!"));
         // @formatter:on
@@ -122,7 +121,7 @@ class TodoControllerTest {
         // @formatter:off
         mvc.perform(post("/todo/finish").param("todoId", todoId))
             .andExpect(status().isFound())
-            .andExpect(redirectedUrl("/list"))
+            .andExpect(redirectedUrl("/todo/list"))
             .andExpect(model().hasNoErrors())
             .andExpect(flash().attribute("successMessage", "Finished successfully!"));
         // @formatter:on
@@ -174,7 +173,7 @@ class TodoControllerTest {
         // @formatter:off
         mvc.perform(post("/todo/delete").param("todoId", todoId))
             .andExpect(status().isFound())
-            .andExpect(redirectedUrl("/list"))
+            .andExpect(redirectedUrl("/todo/list"))
             .andExpect(model().hasNoErrors())
             .andExpect(flash().attribute("successMessage", "Deleted successfully!"));
         // @formatter:on

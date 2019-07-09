@@ -30,117 +30,127 @@ import io.github.yoshikawaa.sample.todo.repository.TodoRepository;
 @SpringBootTest
 class TodoServiceTest {
 
-	@Autowired
-	TodoService todoService;
+    @Autowired
+    TodoService todoService;
 
-	@MockBean
-	TodoRepository todoRepository;
+    @MockBean
+    TodoRepository todoRepository;
 
-	@Autowired
-	AppProperties app;
+    @Autowired
+    AppProperties app;
 
-	@Test
-	void testFindAll() {
-		// setup
-		// setup mocks
-		given(todoRepository.findAll())
-				.willReturn(Lists.list(new Todo("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
-						new Todo("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
-						new Todo("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay())));
+    @Test
+    void testFindAll() {
+        // setup
+        // setup mocks
+        // @formatter:off
+        given(todoRepository.findAll())
+                .willReturn(Lists.list(
+                        new Todo("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
+                        new Todo("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
+                        new Todo("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay())));
+        // @formatter:on
 
-		// execute
-		Collection<Todo> todos = todoService.findAll();
+        // execute
+        Collection<Todo> todos = todoService.findAll();
 
-		// assert
-		assertThat(todos).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished, Todo::getCreatedAt)
-				.hasSize(3).containsExactly(tuple("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
-						tuple("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
-						tuple("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay()));
-	}
+        // assert
+        // @formatter:off
+        assertThat(todos).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished, Todo::getCreatedAt)
+                .hasSize(3).containsExactly(
+                        tuple("1", "todo 1", false, LocalDate.of(2019, 1, 1).atStartOfDay()),
+                        tuple("2", "todo 2", true, LocalDate.of(2019, 1, 2).atStartOfDay()),
+                        tuple("3", "todo 3", false, LocalDate.of(2019, 1, 3).atStartOfDay()));
+        // @formatter:on
+    }
 
-	@Test
-	void testCreate() {
-		// setup
-		Todo todo = new Todo();
-		todo.setTodoTitle("sample todo");
-		LocalDateTime now = LocalDateTime.now();
-		// setup mocks
-		willDoNothing().given(todoRepository).create(any(Todo.class));
+    @Test
+    void testCreate() {
+        // setup
+        Todo todo = new Todo();
+        todo.setTodoTitle("sample todo");
+        LocalDateTime now = LocalDateTime.now();
+        // setup mocks
+        willDoNothing().given(todoRepository).create(any(Todo.class));
 
-		// execute
-		Todo created = todoService.create(todo);
+        // execute
+        Todo created = todoService.create(todo);
 
-		// assert
-		assertThat(created).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished).containsExactly(null,
-				"sample todo", false);
-		assertThat(created.getCreatedAt()).isAfterOrEqualTo(now);
-	}
+        // assert
+        // @formatter:off
+        assertThat(created).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished)
+                .containsExactly(null, "sample todo", false);
+        // @formatter:on
+        assertThat(created.getCreatedAt()).isAfterOrEqualTo(now);
+    }
 
-	@Test
-	void testCreateMaxUnFinishedCount() {
-		// setup
-		// setup mocks
-		given(todoRepository.countByFinished(false)).willReturn(6L);
+    @Test
+    void testCreateMaxUnFinishedCount() {
+        // setup
+        Todo todo = new Todo();
+        todo.setTodoTitle("sample todo");
+        // setup mocks
+        given(todoRepository.countByFinished(false)).willReturn(6L);
 
-		// execute & assert
-		assertThatThrownBy(() -> todoService.create(any(Todo.class))).isInstanceOf(BusinessException.class)
-				.hasMessageContaining(new Long(app.getMaxUnFinishedCount()).toString());
-	}
+        // execute & assert
+        assertThatThrownBy(() -> todoService.create(todo)).isInstanceOf(BusinessException.class)
+                .hasMessageContaining(new Long(app.getMaxUnFinishedCount()).toString());
+    }
 
-	@Test
-	void testFinish() {
-		// setup
-		String todoId = "1";
-		// setup mocks
-		given(todoRepository.findById(todoId)).willReturn(
-				Optional.of(new Todo(todoId, "sample todo", false, LocalDate.of(2019, 1, 1).atStartOfDay())));
+    @Test
+    void testFinish() {
+        // setup
+        String todoId = "1";
+        // setup mocks
+        given(todoRepository.findById(todoId)).willReturn(
+                Optional.of(new Todo(todoId, "sample todo", false, LocalDate.of(2019, 1, 1).atStartOfDay())));
 
-		// execute
-		Todo updated = todoService.finish(todoId);
+        // execute
+        Todo updated = todoService.finish(todoId);
 
-		// assert
-		assertThat(updated).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished, Todo::getCreatedAt)
-				.containsExactly(todoId, "sample todo", true, LocalDate.of(2019, 1, 1).atStartOfDay());
-	}
+        // assert
+        assertThat(updated).extracting(Todo::getTodoId, Todo::getTodoTitle, Todo::isFinished, Todo::getCreatedAt)
+                .containsExactly(todoId, "sample todo", true, LocalDate.of(2019, 1, 1).atStartOfDay());
+    }
 
-	@Test
-	void testFinishNotFound() {
-		// setup
-		String todoId = "1";
-		// setup mocks
-		given(todoRepository.findById(todoId)).willReturn(Optional.empty());
+    @Test
+    void testFinishNotFound() {
+        // setup
+        String todoId = "1";
+        // setup mocks
+        given(todoRepository.findById(todoId)).willReturn(Optional.empty());
 
-		// execute & assert
-		assertThatThrownBy(() -> todoService.finish(todoId)).isInstanceOf(ResourceNotFoundException.class)
-				.hasMessageContaining(todoId);
-	}
+        // execute & assert
+        assertThatThrownBy(() -> todoService.finish(todoId)).isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining(todoId);
+    }
 
-	@Test
-	void testFinishAlreadyFinished() {
-		// setup
-		String todoId = "1";
-		// setup mocks
-		given(todoRepository.findById(todoId)).willReturn(
-				Optional.of(new Todo(todoId, "sample todo", true, LocalDate.of(2019, 1, 1).atStartOfDay())));
+    @Test
+    void testFinishAlreadyFinished() {
+        // setup
+        String todoId = "1";
+        // setup mocks
+        given(todoRepository.findById(todoId)).willReturn(
+                Optional.of(new Todo(todoId, "sample todo", true, LocalDate.of(2019, 1, 1).atStartOfDay())));
 
-		// execute & assert
-		assertThatThrownBy(() -> todoService.finish(todoId)).isInstanceOf(BusinessException.class)
-				.hasMessageContaining(todoId);
-	}
+        // execute & assert
+        assertThatThrownBy(() -> todoService.finish(todoId)).isInstanceOf(BusinessException.class)
+                .hasMessageContaining(todoId);
+    }
 
-	@Test
-	void testDelete() {
-		// setup
-		String todoId = "1";
-		// setup mocks
-		given(todoRepository.findById(todoId)).willReturn(
-				Optional.of(new Todo(todoId, "sample todo", false, LocalDate.of(2019, 1, 1).atStartOfDay())));
+    @Test
+    void testDelete() {
+        // setup
+        String todoId = "1";
+        // setup mocks
+        given(todoRepository.findById(todoId)).willReturn(
+                Optional.of(new Todo(todoId, "sample todo", false, LocalDate.of(2019, 1, 1).atStartOfDay())));
 
-		// execute
-		todoService.delete(todoId);
+        // execute
+        todoService.delete(todoId);
 
-		// assert
-		verify(todoRepository, times(1)).deleteById(argThat(arg -> todoId.equals(arg.getTodoId())));
-	}
+        // assert
+        verify(todoRepository, times(1)).deleteById(argThat(arg -> todoId.equals(arg.getTodoId())));
+    }
 
 }

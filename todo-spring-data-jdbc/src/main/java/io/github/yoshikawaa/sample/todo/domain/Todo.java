@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Todo {
     @Id
-	private String todoId;
-	private String todoTitle;
-	private boolean finished;
-	private LocalDateTime createdAt;
+    private String todoId;
+    private String todoTitle;
+    private boolean finished;
+    private LocalDateTime createdAt;
 }

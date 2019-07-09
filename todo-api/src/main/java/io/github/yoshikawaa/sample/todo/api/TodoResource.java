@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TodoResource {
-	private String todoId;
-	@NotEmpty
-	@Size(min = 1, max = 30)
-	private String todoTitle;
+    private String todoId;
+    @NotEmpty
+    @Size(min = 1, max = 30)
+    private String todoTitle;
     private boolean finished;
     private LocalDateTime createdAt;
 }

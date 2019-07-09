@@ -1,0 +1,9 @@
+messages:
+  404:
+    todo-not-found: The requested Todo is not found. (id={0})
+  409:
+    over-un-finished: The count of un-finished Todo must not be over {0}.
+    already-finished: The requested Todo is already finished. (id={0})
+# validation messages.
+NotEmpty: 入力してください。
+Size: "{2}から{1}文字で入力してください。"
